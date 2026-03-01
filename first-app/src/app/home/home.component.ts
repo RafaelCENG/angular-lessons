@@ -1,4 +1,4 @@
-import { Component, inject } from "@angular/core";
+import { ChangeDetectorRef, Component, inject } from "@angular/core";
 import { HousingService } from "../housing.service";
 import { HousingLocationComponent } from "../housing-location/housing-location.component";
 import type { HousingLocationInfo } from "../housinglocation";
@@ -12,7 +12,26 @@ import type { HousingLocationInfo } from "../housinglocation";
 export class HomeComponent {
 	housingLocationList: HousingLocationInfo[] = [];
 	housingService: HousingService = inject(HousingService);
+	changeDetectorRef: ChangeDetectorRef = inject(ChangeDetectorRef);
+	filteredLocationList: HousingLocationInfo[] = [];
+
+	filterResults(text: string) {
+		if (!text) {
+			this.filteredLocationList = this.housingLocationList;
+			return;
+		}
+		this.filteredLocationList = this.housingLocationList.filter(
+			(housingLocation) =>
+				housingLocation?.city.toLowerCase().includes(text.toLowerCase()),
+		);
+	}
 	constructor() {
-		this.housingLocationList = this.housingService.getAllHousingLocations();
+		this.housingService
+			.getAllHousingLocations()
+			.then((housingLocationList: HousingLocationInfo[]) => {
+				this.housingLocationList = housingLocationList;
+				this.filteredLocationList = housingLocationList;
+				this.changeDetectorRef.markForCheck();
+			});
 	}
 }
