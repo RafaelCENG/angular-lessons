@@ -1,26 +1,42 @@
-import { ChangeDetectionStrategy, Component, signal } from "@angular/core";
-import { RouterOutlet } from "@angular/router";
+// TODO: Add the resource import from @angular/core
+import {
+	ChangeDetectionStrategy,
+	Component,
+	computed,
+	ResourceStatus,
+	resource,
+	signal,
+} from "@angular/core";
+import { getUserData } from "./user-api";
 
 @Component({
 	selector: "app-root",
-	imports: [RouterOutlet],
 	templateUrl: "./app.component.html",
-	styleUrl: "./app.component.css",
+	styleUrls: ["./app.component.css"],
 	changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class AppComponent {
-	title = "signals";
-	userStatus = signal<"online" | "offline">("offline");
+	// TODO: Create a signal for userId
+	userId = signal(1);
+	// TODO: Create a resource for user data
+	userResource = resource({
+		request: () => ({ id: this.userId() }),
+		loader: (params) => getUserData(params.request.id),
+	});
+	// TODO: Create computed signals for resource states
+	isLoading = computed(
+		() => this.userResource.status() === ResourceStatus.Loading,
+	);
+	hasError = computed(
+		() => this.userResource.status() === ResourceStatus.Error,
+	);
+	// TODO: Add loadUser method
 
-	goOnline() {
-		this.userStatus.set("online");
+	// TODO: Add reloadUser method
+	loadUser(id: number) {
+		this.userId.set(id);
 	}
-	goOffline() {
-		this.userStatus.set("offline");
-	}
-	toggleStatus() {
-		this.userStatus.update((current) =>
-			current === "offline" ? "online" : "offline",
-		);
+	reloadUser() {
+		this.userResource.reload();
 	}
 }

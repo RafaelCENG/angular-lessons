@@ -1,14 +1,29 @@
- <div class="user-profile">
-      <h1>User Dashboard</h1>
-      <!-- TODO: Update class binding and display userStatus() -->
-      <div class="status-indicator" [class]="userStatus()">
-        <span class="status-dot"></span>
-        Status: {{userStatus()}}
+ <div>
+      <h2>User Profile Loader</h2>
+
+      <div>
+       <button (click)="loadUser(1)">Load User 1</button>
+      <button (click)="loadUser(2)">Load User 2</button>
+      <button (click)="loadUser(999)">Load Invalid User</button>
+      <button (click)="reloadUser()">Reload</button>
       </div>
 
-      <div class="status-controls">
-        <button (click)="goOnline()" [disabled]="userStatus() === 'online'">Go Online</button>
-        <button (click)="goOffline()" [disabled]="userStatus() === 'offline'">Go Offline</button>
-        <button (click)="toggleStatus()" class="toggle-btn">Toggle Status</button>
+      <div class="status">
+        <!-- TODO: Replace with @if blocks for loading, error, and success states -->
+        <!-- Use isLoading(), hasError(), and userResource.hasValue() -->
+        <!-- For loading: show "Loading user..." -->
+        <!-- For error: show error message with userResource.error()?.message -->
+        <!-- For success: show user name and email from userResource.value() -->
+         @if (isLoading()) {
+        <p>Loading user...</p>
+      } @else if (hasError()) {
+        <p class="error">Error: {{ userResource.error() }}</p>
+      } @else if (userResource.hasValue()) {
+        <div class="user-info">
+          <h3>{{ userResource.value().name }}</h3>
+          <p>{{ userResource.value().email }}</p>
+        </div>
+      }
+        <p>Click a button to load user data</p>
       </div>
     </div>
